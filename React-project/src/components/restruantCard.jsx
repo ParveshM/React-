@@ -1,4 +1,4 @@
-import { IMG_CDN_URL } from "../constant.js";
+import { IMG_CDN_URL } from "../utils/constant";
 
 const RestrauntCard = ({
   name,
@@ -12,8 +12,8 @@ const RestrauntCard = ({
       <img src={IMG_CDN_URL + cloudinaryImageId} alt="Burger King" />
       <h2>{name}</h2>
       <h3>{cuisines.join(", ")}</h3>
-      <h4>{sla?.lastMileTravel} minutes</h4>
-      <h4>{avgRating}</h4>
+      <h4>{sla?.lastMileTravel}: Miles</h4>
+      <h4>AvgRating :{avgRating}</h4>
     </div>
   );
 };

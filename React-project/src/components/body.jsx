@@ -1,19 +1,28 @@
 import { useState } from "react";
-import { restruantList } from "../constant";
 import RestrauntCard from "./restruantCard";
-
-function filterData(searchInput, restruants) {
-  return restruants.filter((restruant) => {
-    if (restruant.info.name.includes(searchInput)) {
-      return restruant;
-    }
-  });
-}
+import Shimmer from "./shimmer.jsx";
+import { Link } from "react-router-dom";
+import filterData from "../utils/filterData.js";
+import useRestruantList from "../utils/useRestruantList.js";
+import useOnline from "../utils/useOnline.js";
 
 const Body = () => {
-  const [searchTxt, setSearchInput] = useState();
-  const [restruants, SetRestruants] = useState(restruantList);
-  return (
+  const [searchTxt, setSearchInput] = useState("");
+  // get the list of restruant and filtered restruantList using custom Hook
+  const { allRestruants, filteredRestruants, setFilteredRestruants } =
+    useRestruantList();
+
+  // Early return -Not render anything
+  if (!allRestruants) return null;
+  // if (filteredRestruants.length) return <h1>No match found</h1>;
+
+  const isOnline = useOnline();
+  if (!isOnline) return <h1>Looks like you are offline</h1>;
+
+  console.log("Render()");
+  return allRestruants?.length === 0 ? (
+    <Shimmer />
+  ) : (
     <>
       <div className="search-container">
         <input
@@ -25,11 +34,12 @@ const Body = () => {
             setSearchInput(e.target.value);
           }}
         />
+
         <button
           className="search-btn"
           onClick={() => {
-            const data = filterData(searchTxt, restruants);
-            SetRestruants(data);
+            const data = filterData(searchTxt, allRestruants);
+            setFilteredRestruants(data);
           }}
         >
           Search
@@ -37,8 +47,15 @@ const Body = () => {
       </div>
 
       <div className="restruant-list">
-        {restruants.map((restruant) => {
-          return <RestrauntCard {...restruant.info} key={restruant.info.id} />;
+        {filteredRestruants.map((restruant) => {
+          return (
+            <Link
+              to={"/restruant/" + restruant.info.id}
+              key={restruant.info.id}
+            >
+              <RestrauntCard {...restruant.info} />
+            </Link>
+          );
         })}
       </div>
     </>
